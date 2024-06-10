@@ -21,6 +21,24 @@ function App() {
     });
   };
 
+  const decryptPassword = (encryption) => {
+    Axios.post('http://localhost:5001/decryptpassword', {
+      password: encryption.password, 
+      iv: encryption.iv
+    }).then((response) => {
+      setPasswordList(
+        passwordList.map((val) => {
+          return val.id == encryption.id ? {
+            id: val.id, 
+            password: val.password, 
+            title: response.data, 
+            iv: val.iv} 
+          : val; 
+        })
+      );
+    });
+  }
+
 
   return (
     <div className="App">
@@ -34,8 +52,17 @@ function App() {
       </div>
 
       <div className="Passwords">
-        {passwordList.map((val) => {
-          return <h1> {val.title} </h1>
+        {passwordList.map((val, key) => {
+          return (
+            <div className="password" 
+              onClick={() => {
+                decryptPassword({ password: val.password, iv: val.iv, id: val.id});
+              }}
+              key={key}
+            >
+              <h3>{val.title}</h3> 
+            </div>
+          );
         })}
       </div>
     </div>
